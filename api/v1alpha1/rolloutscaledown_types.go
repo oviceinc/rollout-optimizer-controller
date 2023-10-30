@@ -29,7 +29,9 @@ type RolloutScaleDownSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of RolloutScaleDown. Edit rolloutscaledown_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	TargetRollout    string `json:"targetRollout,omitempty"`
+	TerminatePerOnce int    `json:"terminatePerOnce,1"`
+	CoolTimeSeconds  int    `json:"coolTimeSeconds,30"`
 }
 
 // RolloutScaleDownStatus defines the observed state of RolloutScaleDown
