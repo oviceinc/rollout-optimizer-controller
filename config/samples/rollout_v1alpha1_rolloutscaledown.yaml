@@ -1,0 +1,12 @@
+apiVersion: rollout.ovice.com/v1alpha1
+kind: RolloutScaleDown
+metadata:
+  labels:
+    app.kubernetes.io/name: rolloutscaledown
+    app.kubernetes.io/instance: rolloutscaledown-sample
+    app.kubernetes.io/part-of: rollout-optimizer-controller
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: rollout-optimizer-controller
+  name: rolloutscaledown-sample
+spec:
+  # TODO(user): Add fields here
