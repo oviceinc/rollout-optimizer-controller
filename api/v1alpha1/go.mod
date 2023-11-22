@@ -1,6 +1,6 @@
 module github.com/oviceinc/rollout-optimizer-controller/api/v1alpha1
 
-go 1.21.3
+go 1.21
 
 require (
 	k8s.io/apimachinery v0.28.3
