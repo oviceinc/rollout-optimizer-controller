@@ -19,7 +19,9 @@ package controller
 import (
 	"context"
 
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -33,9 +35,11 @@ type RolloutScaleDownReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=rollout.ovice.com,resources=rolloutscaledowns,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=rollout.ovice.com,resources=rolloutscaledowns/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=rollout.ovice.com,resources=rolloutscaledowns/finalizers,verbs=update
+//+kubebuilder:rbac:groups=apps.tutorial.kubebuilder.io,resources=simpledeployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=apps.tutorial.kubebuilder.io,resources=simpledeployments/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=apps.tutorial.kubebuilder.io,resources=simpledeployments/finalizers,verbs=update
+//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=apps,resources=deployments/status,verbs=get
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -47,8 +51,14 @@ type RolloutScaleDownReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.16.0/pkg/reconcile
 func (r *RolloutScaleDownReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
-
+	logger := log.FromContext(ctx)
+	foundRollout := &rolloutv1alpha1.RolloutScaleDown{}
+	err := r.Get(ctx, types.NamespacedName{Name: req.Name, Namespace: req.Namespace}, foundRollout)
+	if err != nil && errors.IsNotFound(err) {
+		logger.V(1).Info("Not Found rollout %s /%s", req.Namespace, req.Name)
+	} else if err == nil {
+		logger.V(1).Info("Found Rollout %s /%s", req.Namespace, req.Name)
+	}
 	// TODO(user): your logic here
 
 	return ctrl.Result{}, nil
