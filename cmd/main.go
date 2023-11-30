@@ -32,6 +32,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
+	argorolloutsapiv1alpha1 "github.com/argoproj/argo-rollouts/pkg/apis/rollouts/v1alpha1"
 	rolloutv1alpha1 "github.com/oviceinc/rollout-optimizer-controller/api/v1alpha1"
 	"github.com/oviceinc/rollout-optimizer-controller/internal/controller"
 	//+kubebuilder:scaffold:imports
@@ -46,6 +47,7 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(rolloutv1alpha1.AddToScheme(scheme))
+	utilruntime.Must(argorolloutsapiv1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -94,6 +96,13 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "RolloutScaleDown")
+		os.Exit(1)
+	}
+	if err = (&controller.ArgoRolloutReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ArgoRollout")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder
