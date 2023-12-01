@@ -9,6 +9,6 @@ metadata:
     app.kubernetes.io/created-by: rollout-optimizer-controller
   name: rolloutscaledown-sample
 spec:
-  targetRollout: "example"
+  targetRollout: "rollout-sample"
   terminatePerOnce: 1
   coolTimeSeconds: 40

@@ -41,20 +41,21 @@ func (r *ArgoRolloutReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		}
 	}
 	if targetScaleDown == nil {
-		logger.V(2).Info("%s/%s is not target of ScaleDown", req.Namespace, req.Name)
+		logger.V(2).Info("Not target of ScaleDown", req.Namespace, req.Name)
 		return ctrl.Result{}, nil
 	}
 	argoRollout := &argorolloutsapiv1alpha1.Rollout{}
 	err = r.Get(ctx, types.NamespacedName{Name: req.Name, Namespace: req.Namespace}, argoRollout)
 	if err != nil && errors.IsNotFound(err) {
-		logger.V(1).Info("Not found ArgoRollout %s/%s", req.Namespace, req.Name)
+		logger.V(1).Info("Not found ArgoRollout", req.Namespace, req.Name)
 		return ctrl.Result{}, nil
 	} else if err != nil {
-		logger.V(1).Error(err, "Failed to get ArgoRollout %s/%s", req.Namespace, req.Name)
+		logger.V(1).Error(err, "Failed to get ArgoRollout", req.Namespace, req.Name)
 		return ctrl.Result{}, err
 	}
 
-	logger.V(1).Info("Target ArgoRollout %s/%s", argoRollout.Namespace, argoRollout.Name)
+	logger.V(1).Info("Target ArgoRollout", argoRollout.Namespace, argoRollout.Name)
+	// TODO: Check ArgoRollout status and scaledown if needed
 
 	return ctrl.Result{}, nil
 }
