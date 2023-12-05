@@ -5,6 +5,20 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
+  - argoproj.io
+  resources:
+  - rollouts
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - argoproj.io
+  resources:
+  - rollouts/status
+  verbs:
+  - get
+- apiGroups:
   - rollout.ovice.com
   resources:
   - rolloutscaledowns
