@@ -4,6 +4,7 @@ import (
 	"context"
 
 	argorolloutsapiv1alpha1 "github.com/argoproj/argo-rollouts/pkg/apis/rollouts/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -55,11 +56,36 @@ func (r *ArgoRolloutReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	}
 
 	logger.V(1).Info("Target ArgoRollout", argoRollout.Namespace, argoRollout.Name)
-	// TODO: Check ArgoRollout status and scaledown if needed
+	if isCompleted(&argoRollout.Status) {
+		// TODO: find old replica set
+		// TODO: scale down the replica set
+	}
+
 
 	return ctrl.Result{}, nil
 }
 
+
 func (r *ArgoRolloutReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).For(&argorolloutsapiv1alpha1.Rollout{}).Complete(r)
+}
+
+func isCompleted(status *argorolloutsapiv1alpha1.RolloutStatus) bool {
+	if status.Phase != argorolloutsapiv1alpha1.RolloutPhaseHealthy {
+		return false
+	}
+	completed := false
+	paused := true
+	for _, cond := range status.Conditions {
+		if cond.Type == argorolloutsapiv1alpha1.RolloutCompleted && cond.Status == corev1.ConditionTrue {
+			completed = true
+		}
+		if cond.Type == argorolloutsapiv1alpha1.RolloutPaused && cond.Status == corev1.ConditionFalse {
+			paused = false
+		}
+	}
+	if completed == true && paused == false && status.Replicas >= status.ReadyReplicas {
+		return true
+	}
+	return false
 }
