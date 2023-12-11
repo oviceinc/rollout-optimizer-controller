@@ -11,4 +11,4 @@ metadata:
 spec:
   targetRollout: "rollout-sample"
   terminatePerOnce: 1
-  coolTimeSeconds: 40
+  coolTimeSeconds: 300

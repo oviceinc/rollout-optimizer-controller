@@ -5,6 +5,15 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
+  - apps
+  resources:
+  - replicasets
+  verbs:
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
   - argoproj.io
   resources:
   - rollouts

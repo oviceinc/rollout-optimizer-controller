@@ -20,14 +20,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // RolloutScaleDownSpec defines the desired state of RolloutScaleDown
 type RolloutScaleDownSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
 	// Foo is an example field of RolloutScaleDown. Edit rolloutscaledown_types.go to remove/update
 	TargetRollout    string `json:"targetRollout,omitempty"`
 	TerminatePerOnce int    `json:"terminatePerOnce,1"`
@@ -36,8 +30,7 @@ type RolloutScaleDownSpec struct {
 
 // RolloutScaleDownStatus defines the observed state of RolloutScaleDown
 type RolloutScaleDownStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	LastScaleDownTime metav1.Time `json:"lastScaleDownTime,omitempty"`
 }
 
 //+kubebuilder:object:root=true
