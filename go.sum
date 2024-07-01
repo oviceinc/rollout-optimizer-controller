@@ -107,6 +107,8 @@ github.com/oviceinc/rollout-optimizer-controller/api/v1alpha1 v0.0.0-20231205100
 github.com/oviceinc/rollout-optimizer-controller/api/v1alpha1 v0.0.0-20231205100221-5bddf8254ceb/go.mod h1:q8SaMnyXUtwF3ZdCVLsOa2V21mZUetchpGqZg29dQRw=
 github.com/oviceinc/rollout-optimizer-controller/internal/controller v0.0.0-20231205100221-5bddf8254ceb h1:oG6WTCTOs7AO3h20zGUfcpD6tj3xRGbv2A5huK/Luyw=
 github.com/oviceinc/rollout-optimizer-controller/internal/controller v0.0.0-20231205100221-5bddf8254ceb/go.mod h1:zcwlESd5lWizrU62c0lcl3LsGVutT5LrOrwldVEdMwA=
+github.com/oviceinc/rollout-optimizer-controller/internal/controller v0.0.0-20240701085735-03c03743e00e h1:e4Hm9QMqjs1F9HZaoHtADLjaFbY0UwNZ8ebgG9rLQ30=
+github.com/oviceinc/rollout-optimizer-controller/internal/controller v0.0.0-20240701085735-03c03743e00e/go.mod h1:zcwlESd5lWizrU62c0lcl3LsGVutT5LrOrwldVEdMwA=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
@@ -238,6 +240,7 @@ gopkg.in/yaml.v2 v2.2.8/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.4.0 h1:D8xgwECY7CYvx+Y2n4sBz93Jn9JRvxdiyyo8CTfuKaY=
 gopkg.in/yaml.v2 v2.4.0/go.mod h1:RDklbk79AGWmwhnvt/jBztapEOGDOx6ZbXqjP6csGnQ=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+gopkg.in/yaml.v3 v3.0.0/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 k8s.io/api v0.28.3 h1:Gj1HtbSdB4P08C8rs9AR94MfSGpRhJgsS+GF9V26xMM=
