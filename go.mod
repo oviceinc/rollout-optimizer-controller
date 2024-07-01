@@ -6,7 +6,7 @@ require (
 	github.com/argoproj/argo-rollouts v1.6.2
 	github.com/onsi/ginkgo/v2 v2.19.0
 	github.com/onsi/gomega v1.33.1
-	github.com/oviceinc/rollout-optimizer-controller/api/v1alpha1 v0.0.0-20231205100221-5bddf8254ceb
+	github.com/oviceinc/rollout-optimizer-controller/api/v1alpha1 v0.0.0-20240701085735-03c03743e00e
 	github.com/oviceinc/rollout-optimizer-controller/internal/controller v0.0.0-20231205100221-5bddf8254ceb
 	k8s.io/apimachinery v0.28.3
 	k8s.io/client-go v0.28.3
