@@ -7,22 +7,22 @@ import (
 	argorolloutsapiv1alpha1 "github.com/argoproj/argo-rollouts/pkg/apis/rollouts/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/record"
+	klog "k8s.io/klog/v2"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	klog "k8s.io/klog/v2"
-	"k8s.io/client-go/tools/record"
 
 	optimizerv1alpha1 "github.com/oviceinc/rollout-optimizer-controller/api/v1alpha1"
 )
 
 type ArgoRolloutReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
+	Scheme   *runtime.Scheme
 	Recorder record.EventRecorder
 }
 
@@ -74,7 +74,7 @@ func (r *ArgoRolloutReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 		for i := range RSList.Items {
 			rs := RSList.Items[i]
-			if rs.Name == argoRollout.Name + "-" + rsHash {
+			if rs.Name == argoRollout.Name+"-"+rsHash {
 				continue
 			}
 			if rs.Status.Replicas > 0 {
@@ -107,7 +107,6 @@ func (r *ArgoRolloutReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	}
 	return ctrl.Result{}, nil
 }
-
 
 func (r *ArgoRolloutReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).For(&argorolloutsapiv1alpha1.Rollout{}).Complete(r)
@@ -159,7 +158,6 @@ func (r *ArgoRolloutReconciler) scaleDown(ctx context.Context, rs *appsv1.Replic
 		klog.Errorf("Failed to update ReplicaSet: %v", err)
 		return 0, err
 	}
-
 
 	return 0, nil
 }
