@@ -26,11 +26,11 @@ resources:
 # [PROMETHEUS] To enable prometheus monitor, uncomment all sections with 'PROMETHEUS'.
 #- ../prometheus
 
-patchesStrategicMerge:
+# patchesStrategicMerge:
 # Protect the /metrics endpoint by putting it behind auth.
 # If you want your controller-manager to expose the /metrics
 # endpoint w/o any authn/z, please comment the following line.
-- manager_auth_proxy_patch.yaml
+# - manager_auth_proxy_patch.yaml
 
 
 
@@ -142,3 +142,8 @@ patchesStrategicMerge:
 #          delimiter: '.'
 #          index: 1
 #          create: true
+
+images:
+- name: manager
+  newName: ghcr.io/oviceinc/rollout-optimizer-controller
+  newTag: v0.1.0
