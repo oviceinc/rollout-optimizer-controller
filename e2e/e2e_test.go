@@ -186,10 +186,19 @@ var _ = Describe("E2E", func() {
 
 		time.Sleep(10 * time.Second)
 
+		// The old replica set should no be scaled down
+		err = k8sClient.Get(ctx, types.NamespacedName{Name: oldRS.Name, Namespace: namespace}, oldRS)
+		Expect(err).ShouldNot(HaveOccurred())
+		Expect(oldRS.Status.Replicas).Should(Equal(int32(replicas)))
+		klog.Infof("The old ReplicaSet replicas: %d", oldRS.Status.Replicas)
+
+		// Wait 120 seconds
+		time.Sleep(120 * time.Second)
 		// The old replica set should be scaled down
 		err = k8sClient.Get(ctx, types.NamespacedName{Name: oldRS.Name, Namespace: namespace}, oldRS)
 		Expect(err).ShouldNot(HaveOccurred())
 		Expect(oldRS.Status.Replicas).Should(Equal(int32(replicas - perOnce)))
+		klog.Infof("The old ReplicaSet replicas: %d", oldRS.Status.Replicas)
 
 		// Wait 120 seconds
 		time.Sleep(120 * time.Second)
@@ -197,6 +206,7 @@ var _ = Describe("E2E", func() {
 		err = k8sClient.Get(ctx, types.NamespacedName{Name: oldRS.Name, Namespace: namespace}, oldRS)
 		Expect(err).ShouldNot(HaveOccurred())
 		Expect(oldRS.Status.Replicas).Should(Equal(int32(replicas - perOnce*2)))
+		klog.Infof("The old ReplicaSet replicas: %d", oldRS.Status.Replicas)
 
 		// Wait 120 seconds
 		time.Sleep(120 * time.Second)
@@ -204,6 +214,7 @@ var _ = Describe("E2E", func() {
 		err = k8sClient.Get(ctx, types.NamespacedName{Name: oldRS.Name, Namespace: namespace}, oldRS)
 		Expect(err).ShouldNot(HaveOccurred())
 		Expect(oldRS.Status.Replicas).Should(Equal(int32(replicas - perOnce*3)))
+		klog.Infof("The old ReplicaSet replicas: %d", oldRS.Status.Replicas)
 
 		// Wait 120 seconds
 		time.Sleep(120 * time.Second)
@@ -211,5 +222,6 @@ var _ = Describe("E2E", func() {
 		err = k8sClient.Get(ctx, types.NamespacedName{Name: oldRS.Name, Namespace: namespace}, oldRS)
 		Expect(err).ShouldNot(HaveOccurred())
 		Expect(oldRS.Status.Replicas).Should(Equal(int32(replicas - perOnce*4)))
+		klog.Infof("The old ReplicaSet replicas: %d", oldRS.Status.Replicas)
 	})
 })

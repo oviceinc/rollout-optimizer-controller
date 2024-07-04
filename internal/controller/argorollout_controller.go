@@ -94,7 +94,7 @@ func (r *ArgoRolloutReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 			}
 			klog.V(1).Infof("Old ReplicaSet: %s/%s", rs.Namespace, rs.Name)
 
-			retry, err := r.scaleDown(ctx, rs, targetScaleDown)
+			retry, err := r.scaleDown(ctx, rs, targetScaleDown, argoRollout)
 			if err != nil {
 				klog.Errorf("Failed to scale down ReplicaSet: %v", err)
 				return ctrl.Result{}, err
@@ -132,7 +132,17 @@ func isCompleted(status *argorolloutsapiv1alpha1.RolloutStatus) bool {
 	return false
 }
 
-func (r *ArgoRolloutReconciler) scaleDown(ctx context.Context, rs *appsv1.ReplicaSet, scaleDown *optimizerv1alpha1.RolloutScaleDown) (time.Duration, error) {
+func (r *ArgoRolloutReconciler) scaleDown(ctx context.Context, rs *appsv1.ReplicaSet, scaleDown *optimizerv1alpha1.RolloutScaleDown, rollout *argorolloutsapiv1alpha1.Rollout) (time.Duration, error) {
+	rolloutUpdated := time.Now()
+	for _, cond := range rollout.Status.Conditions {
+		if cond.Type == argorolloutsapiv1alpha1.RolloutCompleted {
+			rolloutUpdated = cond.LastUpdateTime.Time
+		}
+	}
+	if rolloutUpdated.Add(time.Duration(scaleDown.Spec.CoolTimeSeconds) * time.Second).After(time.Now()) {
+		return 30 * time.Second, nil
+	}
+
 	lastUpdated := scaleDown.Status.LastScaleDownTime
 	if lastUpdated.Add(time.Duration(scaleDown.Spec.CoolTimeSeconds) * time.Second).After(time.Now()) {
 		return 30 * time.Second, nil
