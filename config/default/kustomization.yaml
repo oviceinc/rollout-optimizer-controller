@@ -146,4 +146,4 @@ resources:
 images:
 - name: manager
   newName: ghcr.io/oviceinc/rollout-optimizer-controller
-  newTag: v0.1.0
+  newTag: 0.1.1
