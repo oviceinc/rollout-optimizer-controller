@@ -1,82 +1,73 @@
 # rollout-optimizer-controller
-// TODO(user): Add simple overview of use/purpose
+This is a controller that helps blue green deployment of [Argo Rollout](https://argoproj.github.io/argo-rollouts/features/bluegreen/).
 
-## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
 
-## Getting Started
-You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
-**Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
+When you specify `scaleDownDelaySeconds` to 0 in [Argo Rollout](https://argoproj.github.io/argo-rollouts/features/bluegreen/#scaledowndelayseconds) resource, Argo Rollout will not scale down the old Replica Set. The aim of this controller is to manage it. This controller scales down the old Replica Set after argo-rollouts finished.
 
-### Running on the cluster
-1. Install Instances of Custom Resources:
 
-```sh
-kubectl apply -k config/samples/
+The problem of argo-rollouts is too early to terminate the old Replica Set pods. For example, if you execute WebSocket server on your Rollout, you want to scale dow slowly during deployment. But argo-rollouts terminate the old pods after switching traffics. Even though Service is switched by argo-rollouts, old WebSocket connections still connect to the old pods. So you want to terminate the old pods 1 by 1 to mitigate the load when reconnecting. This controller can terminate the olds pods slowly.
+
+
+# Install
+## Install argo-rollouts
+This controller depends on argo-rollouts, so please install [argo-rollouts](https://github.com/argoproj/argo-rollouts).
+
+## Install rollout-optimizer-controller
+```
+$ kubectl apply -k https://github.com/oviceinc/rollout-optimizer-controller//config/default/?ref=v0.1.0
 ```
 
-2. Build and push your image to the location specified by `IMG`:
+# Usage
+At first, please apply your Rollout, like
 
-```sh
-make docker-build docker-push IMG=<some-registry>/rollout-optimizer-controller:tag
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: rollout-sample
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: rollout-sample
+  template:
+    metadata:
+      labels:
+        app: rollout-sample
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+  strategy:
+    blueGreen:
+      activeService: rollout-bluegreen-active
+      previewService: rollout-bluegreen-preview
+      autoPromotionEnabled: true
+      # Do not scaleDown from ArgoRollout
+      scaleDownDelaySeconds: 0
+
 ```
 
-3. Deploy the controller to the cluster with the image specified by `IMG`:
+Then, apply RolloutScaleDown resource, like
 
-```sh
-make deploy IMG=<some-registry>/rollout-optimizer-controller:tag
+```yaml
+apiVersion: rollout.ovice.com/v1alpha1
+kind: RolloutScaleDown
+metadata:
+  name: rolloutscaledown-sample
+spec:
+  targetRollout: "rollout-sample"
+  terminatePerOnce: 1
+  coolTimeSeconds: 300
 ```
 
-### Uninstall CRDs
-To delete the CRDs from the cluster:
+Finally, when you update the Rollout resource, the old pods will be terminated 1 by 1 per 300 seconds.
 
-```sh
-make uninstall
-```
-
-### Undeploy controller
-UnDeploy the controller from the cluster:
-
-```sh
-make undeploy
-```
-
-## Contributing
-// TODO(user): Add detailed information on how you would like others to contribute to this project
-
-### How it works
-This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/).
-
-It uses [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/),
-which provide a reconcile function responsible for synchronizing resources until the desired state is reached on the cluster.
-
-### Test It Out
-1. Install the CRDs into the cluster:
-
-```sh
-make install
-```
-
-2. Run your controller (this will run in the foreground, so switch to a new terminal if you want to leave it running):
-
-```sh
-make run
-```
-
-**NOTE:** You can also run this in one step by running: `make install run`
-
-### Modifying the API definitions
-If you are editing the API definitions, generate the manifests such as CRs or CRDs using:
-
-```sh
-make manifests
-```
-
-**NOTE:** Run `make --help` for more information on all potential `make` targets
-
-More information can be found via the [Kubebuilder Documentation](https://book.kubebuilder.io/introduction.html)
-
-## License
+# License
 
 Copyright 2023.
 
