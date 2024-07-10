@@ -62,8 +62,25 @@ func (r *ArgoRolloutReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	}
 
 	klog.Infof("Target ArgoRollout: %s/%s", argoRollout.Namespace, argoRollout.Name)
+
 	if isCompleted(&argoRollout.Status) {
 		klog.V(1).Infof("Rollout is completed: %s/%s", argoRollout.Namespace, argoRollout.Name)
+
+		if argoRollout.Status.Replicas == argoRollout.Status.ReadyReplicas {
+			if targetScaleDown.Status.Phase != optimizerv1alpha1.RolloutScaleDownPhaseHealthy {
+				newStatus := targetScaleDown.Status.DeepCopy()
+				newStatus.Phase = optimizerv1alpha1.RolloutScaleDownPhaseHealthy
+				targetScaleDown.Status = *newStatus
+				if err := r.Status().Update(ctx, targetScaleDown); err != nil {
+					klog.Errorf("Failed to update RolloutScaleDown: %v", err)
+					return ctrl.Result{}, err
+				}
+				klog.Infof("RolloutScaleDown is healthy: %s/%s", targetScaleDown.Namespace, targetScaleDown.Name)
+				r.Recorder.Eventf(targetScaleDown, corev1.EventTypeNormal, "Healthy", "RolloutScaleDown is healthy")
+			}
+			return ctrl.Result{}, nil
+		}
+
 		rsHash := argoRollout.Status.StableRS
 		oldRS := []*appsv1.ReplicaSet{}
 		RSList := &appsv1.ReplicaSetList{}
@@ -100,11 +117,20 @@ func (r *ArgoRolloutReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 				return ctrl.Result{}, err
 			}
 			if retry > 0 {
+				if targetScaleDown.Status.Phase != optimizerv1alpha1.RolloutScaleDownPhaseScaling {
+					newStatus := targetScaleDown.Status.DeepCopy()
+					newStatus.Phase = optimizerv1alpha1.RolloutScaleDownPhaseScaling
+					targetScaleDown.Status = *newStatus
+					if err := r.Status().Update(ctx, targetScaleDown); err != nil {
+						klog.Errorf("Failed to update RolloutScaleDown: %v", err)
+						return ctrl.Result{}, err
+					}
+				}
 				return ctrl.Result{RequeueAfter: retry, Requeue: true}, nil
 			}
-
 		}
 	}
+
 	return ctrl.Result{}, nil
 }
 
@@ -155,6 +181,7 @@ func (r *ArgoRolloutReconciler) scaleDown(ctx context.Context, rs *appsv1.Replic
 
 	newStatus := scaleDown.Status.DeepCopy()
 	newStatus.LastScaleDownTime = metav1.Now()
+	newStatus.Phase = optimizerv1alpha1.RolloutScaleDownPhaseScaling
 	scaleDown.Status = *newStatus
 	if err := r.Status().Update(ctx, scaleDown); err != nil {
 		klog.Errorf("Failed to update RolloutScaleDown: %v", err)

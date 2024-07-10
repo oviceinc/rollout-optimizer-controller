@@ -23,18 +23,31 @@ import (
 // RolloutScaleDownSpec defines the desired state of RolloutScaleDown
 type RolloutScaleDownSpec struct {
 	// Foo is an example field of RolloutScaleDown. Edit rolloutscaledown_types.go to remove/update
-	TargetRollout    string `json:"targetRollout,omitempty"`
-	TerminatePerOnce int    `json:"terminatePerOnce,1"`
-	CoolTimeSeconds  int    `json:"coolTimeSeconds,30"`
+	TargetRollout string `json:"targetRollout,omitempty"`
+	// +kubebuilder:default=1
+	TerminatePerOnce int `json:"terminatePerOnce"`
+	// +kubebuilder:default=30
+	CoolTimeSeconds int `json:"coolTimeSeconds"`
 }
 
 // RolloutScaleDownStatus defines the observed state of RolloutScaleDown
 type RolloutScaleDownStatus struct {
+	// +optional
 	LastScaleDownTime metav1.Time `json:"lastScaleDownTime,omitempty"`
+	// +kubebuilder:default=Healthy
+	Phase RolloutScaleDownPhase `json:"phase,omitempty"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
+type RolloutScaleDownPhase string
+
+const (
+	RolloutScaleDownPhaseHealthy RolloutScaleDownPhase = "Healthy"
+	RolloutScaleDownPhaseScaling RolloutScaleDownPhase = "Scaling"
+)
+
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Phase",type="string",JSONPath=".status.phase",description="RolloutScaleDown deployment phase"
 
 // RolloutScaleDown is the Schema for the rolloutscaledowns API
 type RolloutScaleDown struct {
@@ -45,7 +58,7 @@ type RolloutScaleDown struct {
 	Status RolloutScaleDownStatus `json:"status,omitempty"`
 }
 
-//+kubebuilder:object:root=true
+// +kubebuilder:object:root=true
 
 // RolloutScaleDownList contains a list of RolloutScaleDown
 type RolloutScaleDownList struct {
