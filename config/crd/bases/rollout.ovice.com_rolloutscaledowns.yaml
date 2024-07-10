@@ -14,7 +14,12 @@ spec:
     singular: rolloutscaledown
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - description: RolloutScaleDown deployment phase
+      jsonPath: .status.phase
+      name: Phase
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: RolloutScaleDown is the Schema for the rolloutscaledowns API
@@ -40,12 +45,14 @@ spec:
             description: RolloutScaleDownSpec defines the desired state of RolloutScaleDown
             properties:
               coolTimeSeconds:
+                default: 30
                 type: integer
               targetRollout:
                 description: Foo is an example field of RolloutScaleDown. Edit rolloutscaledown_types.go
                   to remove/update
                 type: string
               terminatePerOnce:
+                default: 1
                 type: integer
             required:
             - coolTimeSeconds
@@ -56,6 +63,9 @@ spec:
             properties:
               lastScaleDownTime:
                 format: date-time
+                type: string
+              phase:
+                default: Healthy
                 type: string
             type: object
         type: object
