@@ -9,7 +9,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
@@ -82,20 +81,21 @@ func (r *ArgoRolloutReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		}
 
 		rsHash := argoRollout.Status.StableRS
-		oldRS := []*appsv1.ReplicaSet{}
-		RSList := &appsv1.ReplicaSetList{}
-		if err := r.List(ctx, RSList, &client.ListOptions{LabelSelector: labels.SelectorFromSet(map[string]string{"app": argoRollout.Name})}); err != nil {
-			klog.Errorf("Failed to list ReplicaSet: %v", err)
+
+		RSList, err := r.findReplicaSets(ctx, argoRollout)
+		if err != nil {
+			klog.Errorf("Failed to find ReplicaSet: %v", err)
 			return ctrl.Result{}, err
 		}
 
-		for i := range RSList.Items {
-			rs := RSList.Items[i]
+		oldRS := []*appsv1.ReplicaSet{}
+		for i := range RSList {
+			rs := RSList[i]
 			if rs.Name == argoRollout.Name+"-"+rsHash {
 				continue
 			}
 			if rs.Status.Replicas > 0 {
-				oldRS = append(oldRS, &rs)
+				oldRS = append(oldRS, rs)
 			}
 		}
 		if len(oldRS) == 0 {
@@ -156,6 +156,25 @@ func isCompleted(status *argorolloutsapiv1alpha1.RolloutStatus) bool {
 		return true
 	}
 	return false
+}
+
+func (r *ArgoRolloutReconciler) findReplicaSets(ctx context.Context, rollout *argorolloutsapiv1alpha1.Rollout) ([]*appsv1.ReplicaSet, error) {
+	list := &appsv1.ReplicaSetList{}
+	if err := r.List(ctx, list, &client.ListOptions{Namespace: rollout.Namespace}); err != nil {
+		klog.Errorf("Failed to list ReplicaSet: %v", err)
+		return nil, err
+	}
+	results := []*appsv1.ReplicaSet{}
+	for i := range list.Items {
+		rs := list.Items[i]
+		for _, owner := range rs.OwnerReferences {
+			if owner.Kind == "Rollout" && owner.Name == rollout.Name {
+				results = append(results, &rs)
+				continue
+			}
+		}
+	}
+	return results, nil
 }
 
 func (r *ArgoRolloutReconciler) scaleDown(ctx context.Context, rs *appsv1.ReplicaSet, scaleDown *optimizerv1alpha1.RolloutScaleDown, rollout *argorolloutsapiv1alpha1.Rollout) (time.Duration, error) {
