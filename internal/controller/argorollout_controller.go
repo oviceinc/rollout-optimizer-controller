@@ -31,6 +31,7 @@ type ArgoRolloutReconciler struct {
 //+kubebuilder:rbac:groups=rollout.ovice.com,resources=rolloutscaledowns/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=rollout.ovice.com,resources=rolloutscaledowns/finalizers,verbs=update
 //+kubebuilder:rbac:groups=apps,resources=replicasets,verbs=get;list;watch;update
+//+kubebuilder:rbac:groups="",resources=events,verbs=create;patch
 
 func (r *ArgoRolloutReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	scaleDownList := &optimizerv1alpha1.RolloutScaleDownList{}
