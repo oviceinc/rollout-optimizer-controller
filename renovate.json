@@ -3,11 +3,7 @@
   "extends": [
     "config:base"
   ],
-  "packageRules": [
-    {
-      "ignoreDeps": [
-        "k8s.io/*"
-      ]
-    }
+  "ignoreDeps": [
+    "k8s.io/*"
   ]
 }
