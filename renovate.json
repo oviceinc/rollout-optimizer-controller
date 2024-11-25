@@ -2,5 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base"
+  ],
+  "packageRules": [
+    {
+      "ignoreDeps": [
+        "k8s.io/*"
+      ]
+    }
   ]
 }
