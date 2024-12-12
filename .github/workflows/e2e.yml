@@ -15,7 +15,7 @@ env:
 
 jobs:
   e2e-test:
-    runs-on: ubuntu-latest
+    runs-on: utility-staging-amd64
 
     strategy:
       matrix:
