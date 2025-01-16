@@ -2,7 +2,7 @@ module github.com/oviceinc/rollout-optimizer-controller
 
 go 1.22.0
 
-toolchain go1.23.1
+toolchain go1.23.5
 
 require (
 	github.com/argoproj/argo-rollouts v1.7.2
