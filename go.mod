@@ -3,7 +3,7 @@ module github.com/oviceinc/rollout-optimizer-controller
 go 1.24.6
 
 require (
-	github.com/argoproj/argo-rollouts v1.8.0
+	github.com/argoproj/argo-rollouts v1.8.3
 	github.com/onsi/ginkgo/v2 v2.24.0
 	github.com/onsi/gomega v1.37.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -54,7 +54,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/oauth2 v0.27.0 // indirect
+	golang.org/x/oauth2 v0.29.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/term v0.34.0 // indirect
