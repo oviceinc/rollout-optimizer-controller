@@ -1,8 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base"
-  ],
+  "extends": ["local>oviceinc/renovate-config"],
   "packageRules": [
     {
       "matchPackagePrefixes": ["k8s.io/"],
