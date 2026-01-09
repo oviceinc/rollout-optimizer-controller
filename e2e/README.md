@@ -18,7 +18,7 @@ $ kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/re
 
 ## Build docker and push
 ```
-$ export IMAGE_ID=localhost:5000/rollout-optimizer-controller
+$ export IMAGE_ID=localhost:5001/rollout-optimizer-controller
 $ docker build . --tag ${IMAGE_ID}:e2e
 $ docker push ${IMAGE_ID}:e2e
 ```

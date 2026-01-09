@@ -60,7 +60,7 @@ jobs:
           kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
       - name: Build docker image
         run: |
-          IMAGE_ID=localhost:5000/$IMAGE_NAME
+          IMAGE_ID=localhost:5001/$IMAGE_NAME
           SHA=${{ github.sha }}
           docker build . --file Dockerfile --tag $IMAGE_ID:$SHA
           docker push $IMAGE_ID:$SHA
@@ -72,7 +72,7 @@ jobs:
           kubectl get node
       - name: Testing
         run: |
-          IMAGE_ID=localhost:5000/$IMAGE_NAME
+          IMAGE_ID=localhost:5001/$IMAGE_NAME
           SHA=${{ github.sha }}
           export MANAGER_IMAGE=$IMAGE_ID:$SHA
           go mod download
